@@ -13,12 +13,7 @@ Todo trecho de código pertencente a um exercício tem um comentário no formato
 // EX02 - Adicionando filters - Aqui registro o filter
 ```
 
-Pesquise pelo código do exercício (Ctrl+Shift+F no editor) ou use o git:
-
-```bash
-git grep -n "EX01"      # um exercício
-git grep -n "EX0"       # todos os pontos de todos os exercícios
-```
+Pesquise pelo código do exercício no VS Code (Ctrl+Shift+F): `EX01` para um exercício, `EX0` para todos os pontos de todos os exercícios.
 
 | Exercício | Tema | Onde está |
 |-----------|------|-----------|
