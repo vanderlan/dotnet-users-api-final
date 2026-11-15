@@ -1,0 +1,70 @@
+@host = http://localhost:5042
+
+# EX04 - Autenticação com JWT - Aqui é a variável do token: cole o token retornado pelo login (passo 2)
+@token = COLE_O_TOKEN_AQUI
+
+### 1. Criar usuário admin  -> 201 Created + Location
+# EX04 - Autenticação com JWT - O cadastro fica aberto (sem token) para criar o primeiro usuário
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Admin",
+  "email": "admin@exemplo.com",
+  "password": "Admin@123",
+  "profile": "Admin"
+}
+
+### 2. Login -> devolve o token
+# EX04 - Autenticação com JWT - Aqui é a chamada de login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@exemplo.com",
+  "password": "Admin@123"
+}
+
+### 3. Listar usuários (paginado + filtro por nome)
+# EX04 - Autenticação com JWT - Agora a listagem exige o token de um Admin
+GET {{host}}/api/users?page=1&quantity=10&query=
+Authorization: Bearer {{token}}
+
+### 4. Criar usuário operator
+POST {{host}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Maria Silva",
+  "email": "maria@exemplo.com",
+  "password": "Senha@123",
+  "profile": "Operator"
+}
+
+### 5. Buscar por id  (troque pelo id retornado no passo 4)
+GET {{host}}/api/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### 6. Atualizar  -> 204 No Content
+PUT {{host}}/api/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Maria S. Souza",
+  "email": "maria@exemplo.com",
+  "profile": "Admin"
+}
+
+### 7. Remover  -> 204 No Content
+DELETE {{host}}/api/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### 8. Erro de validação -> 400 (ValidationProblemDetails)
+POST {{host}}/api/users
+Content-Type: application/json
+
+{ "name": "", "email": "invalido", "password": "123", "profile": "Admin" }
+
+### 9. Sem token -> 401   |   com token de Operator -> 403
+GET {{host}}/api/users
