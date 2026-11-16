@@ -35,7 +35,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 
 // Entity Framework Core + PostgreSQL
-// (o banco é criado/atualizado pelas migrations: EX01 - Criando as migrations, pasta Data/Migrations)
+// EX01 - Criando as migrations - O esquema do banco vem das migrations (pasta Data/Migrations), não deste código
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<TimestampsInterceptor>();
 builder.Services.AddDbContext<AppDbContext>((provider, options) =>

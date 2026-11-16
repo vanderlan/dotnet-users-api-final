@@ -28,6 +28,10 @@ public sealed class UserRepository(AppDbContext context) : IUserRepository
         if (!string.IsNullOrWhiteSpace(filter.Query))
             query = query.Where(x => EF.Functions.ILike(x.Name, $"%{filter.Query}%"));
 
+        // EX05 - Filtro por perfil - Aqui aplico o filtro na consulta (vira um WHERE no SQL)
+        if (filter.Profile is not null)
+            query = query.Where(x => x.Profile == filter.Profile.Value);
+
         var count = await query.CountAsync(cancellationToken);
 
         var items = await query

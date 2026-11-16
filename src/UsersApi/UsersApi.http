@@ -1,10 +1,14 @@
 @host = http://localhost:5042
 
-# EX04 - Autenticação com JWT - Aqui é a variável do token: cole o token retornado pelo login (passo 2)
-@token = COLE_O_TOKEN_AQUI
+# EX04 - Autenticação com JWT - Aqui é a variável do token de Admin: cole o token retornado pelo login (passo 2)
+@token = COLE_O_TOKEN_DO_ADMIN_AQUI
+
+# EX04 - Autenticação com JWT - Aqui é a variável do token de Operator: cole o token retornado pelo login (passo 7)
+@tokenOperator = COLE_O_TOKEN_DO_OPERATOR_AQUI
 
 ### 1. Criar usuário admin  -> 201 Created + Location
 # EX04 - Autenticação com JWT - O cadastro fica aberto (sem token) para criar o primeiro usuário
+# EX06 - Novo campo no usuário - Aqui envio o novo campo "phone" (opcional)
 POST {{host}}/api/users
 Content-Type: application/json
 
@@ -12,10 +16,11 @@ Content-Type: application/json
   "name": "Admin",
   "email": "admin@exemplo.com",
   "password": "Admin@123",
-  "profile": "Admin"
+  "profile": "Admin",
+  "phone": "(83) 99999-0000"
 }
 
-### 2. Login -> devolve o token
+### 2. Login do admin -> devolve o token (copie para @token)
 # EX04 - Autenticação com JWT - Aqui é a chamada de login
 POST {{host}}/api/auth/login
 Content-Type: application/json
@@ -30,7 +35,18 @@ Content-Type: application/json
 GET {{host}}/api/users?page=1&quantity=10&query=
 Authorization: Bearer {{token}}
 
-### 4. Criar usuário operator
+### 4. Listar só os Admins
+# EX05 - Filtro por perfil - Aqui é o teste do novo filtro: ?profile=Admin (ou Operator)
+GET {{host}}/api/users?profile=Admin
+Authorization: Bearer {{token}}
+
+### 5. Perfil inexistente -> 400 (o model binding recusa o valor)
+# EX05 - Filtro por perfil - Valor que não existe no enum: a API responde 400 sozinha
+GET {{host}}/api/users?profile=Chefe
+Authorization: Bearer {{token}}
+
+### 6. Criar usuário operator  -> 201 Created
+# EX06 - Novo campo no usuário - O phone é opcional: este cadastro não envia o campo (fica null)
 POST {{host}}/api/users
 Content-Type: application/json
 
@@ -41,11 +57,36 @@ Content-Type: application/json
   "profile": "Operator"
 }
 
-### 5. Buscar por id  (troque pelo id retornado no passo 4)
+### 7. Login do operator -> devolve o token (copie para @tokenOperator)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria@exemplo.com",
+  "password": "Senha@123"
+}
+
+### 8. Meus dados (admin) -> 200
+# EX07 - Endpoint GET /api/users/me - Aqui é o teste: devolve o usuário dono do token
+GET {{host}}/api/users/me
+Authorization: Bearer {{token}}
+
+### 9. Meus dados (operator) -> 200 (qualquer perfil logado pode chamar)
+# EX07 - Endpoint GET /api/users/me - Mesmo com perfil Operator funciona: o endpoint não exige Admin
+GET {{host}}/api/users/me
+Authorization: Bearer {{tokenOperator}}
+
+### 10. Listar usuários como operator -> 403
+# EX04 - Autenticação com JWT - Perfil sem permissão: 403 Forbidden
+GET {{host}}/api/users
+Authorization: Bearer {{tokenOperator}}
+
+### 11. Buscar por id  (troque pelo id retornado no passo 6)
 GET {{host}}/api/users/00000000-0000-0000-0000-000000000000
 Authorization: Bearer {{token}}
 
-### 6. Atualizar  -> 204 No Content
+### 12. Atualizar  -> 204 No Content
+# EX06 - Novo campo no usuário - Aqui o PUT também envia o phone
 PUT {{host}}/api/users/00000000-0000-0000-0000-000000000000
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -53,18 +94,21 @@ Content-Type: application/json
 {
   "name": "Maria S. Souza",
   "email": "maria@exemplo.com",
-  "profile": "Admin"
+  "profile": "Operator",
+  "phone": "(83) 98888-1111"
 }
 
-### 7. Remover  -> 204 No Content
+### 13. Remover  -> 204 No Content
 DELETE {{host}}/api/users/00000000-0000-0000-0000-000000000000
 Authorization: Bearer {{token}}
 
-### 8. Erro de validação -> 400 (ValidationProblemDetails)
+### 14. Erro de validação -> 400 (ValidationProblemDetails)
+# EX06 - Novo campo no usuário - O phone com mais de 20 caracteres também é recusado
 POST {{host}}/api/users
 Content-Type: application/json
 
-{ "name": "", "email": "invalido", "password": "123", "profile": "Admin" }
+{ "name": "", "email": "invalido", "password": "123", "profile": "Admin", "phone": "123456789012345678901" }
 
-### 9. Sem token -> 401   |   com token de Operator -> 403
+### 15. Sem token -> 401
+# EX04 - Autenticação com JWT - Sem o header Authorization a API responde 401
 GET {{host}}/api/users

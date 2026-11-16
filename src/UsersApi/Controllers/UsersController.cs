@@ -1,3 +1,4 @@
+using System.Security.Claims;                   // EX07 - Endpoint GET /api/users/me - using do ClaimTypes
 using Microsoft.AspNetCore.Authorization;      // EX04 - Autenticação com JWT - using do [Authorize]
 using Microsoft.AspNetCore.Mvc;
 using UsersApi.Domain.Entities;                // EX04 - Autenticação com JWT - using do UserProfile (usado no Roles)
@@ -12,11 +13,13 @@ namespace UsersApi.Controllers;
 [Authorize] // EX04 - Autenticação com JWT - Aqui exijo login (token) em todo o controller
 public class UsersController(IUserService userService) : ControllerBase
 {
-    /// <summary>Lista usuários com paginação. Use ?query= para filtrar pelo nome.</summary>
+    // EX05 - Filtro por perfil - Aqui atualizo a descrição do endpoint (ela aparece no Scalar)
+    /// <summary>Lista usuários com paginação. Use ?query= para filtrar pelo nome e ?profile= (Admin ou Operator) pelo perfil.</summary>
     [HttpGet]
     [Authorize(Roles = nameof(UserProfile.Admin))] // EX04 - Autenticação com JWT - Aqui exijo o perfil Admin
     [ProducesResponseType<PagedResult<UserResponse>>(StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<UserResponse>>> GetAll(
+        // EX05 - Filtro por perfil - Aqui o código não muda: o [FromQuery] UserFilter já recebe o ?profile= (model binding)
         [FromQuery] UserFilter filter, CancellationToken cancellationToken)
     {
         return Ok(await userService.GetPagedAsync(filter, cancellationToken));
@@ -29,6 +32,20 @@ public class UsersController(IUserService userService) : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserResponse>> GetById(string id, CancellationToken cancellationToken)
     {
+        return Ok(await userService.GetByIdAsync(id, cancellationToken));
+    }
+
+    // EX07 - Endpoint GET /api/users/me - Aqui é o endpoint: devolve o usuário do token. Sem Roles: qualquer perfil logado pode chamar
+    // (a rota literal "me" tem prioridade sobre a rota com parâmetro "{id}")
+    /// <summary>Devolve os dados do usuário autenticado (o id vem da claim do token).</summary>
+    [HttpGet("me")]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UserResponse>> GetMe(CancellationToken cancellationToken)
+    {
+        // EX07 - Endpoint GET /api/users/me - Aqui leio o id na claim "Sid" do token (nunca da URL nem do corpo da requisição)
+        var id = User.FindFirstValue(ClaimTypes.Sid)!;
+
         return Ok(await userService.GetByIdAsync(id, cancellationToken));
     }
 

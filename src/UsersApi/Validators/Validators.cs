@@ -18,6 +18,10 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
             .MinimumLength(6).WithMessage("A senha deve ter pelo menos 6 caracteres.");
 
         RuleFor(x => x.Profile).IsInEnum().WithMessage("Perfil inválido.");
+
+        // EX06 - Novo campo no usuário - Aqui valido o tamanho do Phone no cadastro (a coluna aceita até 20 caracteres)
+        RuleFor(x => x.Phone).MaximumLength(20)
+            .WithMessage("O telefone deve ter no máximo 20 caracteres.");
     }
 }
 
@@ -33,6 +37,10 @@ public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
             .MaximumLength(200);
 
         RuleFor(x => x.Profile).IsInEnum().WithMessage("Perfil inválido.");
+
+        // EX06 - Novo campo no usuário - Aqui valido o tamanho do Phone na atualização
+        RuleFor(x => x.Phone).MaximumLength(20)
+            .WithMessage("O telefone deve ter no máximo 20 caracteres.");
     }
 }
 

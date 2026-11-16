@@ -35,6 +35,8 @@ public sealed class UserService(IUnitOfWork unitOfWork, IPasswordHasher password
             Name = request.Name.Trim(),
             Email = email,
             Profile = request.Profile,
+            // EX06 - Novo campo no usuário - Aqui gravo o Phone ao criar (Trim tira espaços das pontas)
+            Phone = request.Phone?.Trim(),
             PasswordHash = passwordHasher.Hash(request.Password)
         }, cancellationToken);
 
@@ -56,6 +58,9 @@ public sealed class UserService(IUnitOfWork unitOfWork, IPasswordHasher password
         user.Name = request.Name.Trim();
         user.Email = email;
         user.Profile = request.Profile;
+
+        // EX06 - Novo campo no usuário - Aqui atualizo o Phone
+        user.Phone = request.Phone?.Trim();
 
         // EX03 - Implementando o Unit of Work - Aqui é o commit depois de alterar os campos (no lugar do UpdateAsync)
         await unitOfWork.CommitAsync(cancellationToken);

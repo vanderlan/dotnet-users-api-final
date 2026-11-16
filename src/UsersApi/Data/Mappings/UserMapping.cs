@@ -17,6 +17,9 @@ public class UserMapping : IEntityTypeConfiguration<User>
         builder.Property(x => x.Email).HasMaxLength(200).IsRequired();
         builder.Property(x => x.PasswordHash).HasMaxLength(300).IsRequired();
 
+        // EX06 - Novo campo no usuário - Aqui é a coluna: tamanho máximo 20 e opcional (sem IsRequired)
+        builder.Property(x => x.Phone).HasMaxLength(20);
+
         // Enum gravado como texto ("Admin") para ficar legível no pgAdmin.
         builder.Property(x => x.Profile).HasConversion<string>().HasMaxLength(20).IsRequired();
 
