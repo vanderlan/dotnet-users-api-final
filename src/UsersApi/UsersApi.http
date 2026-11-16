@@ -42,7 +42,7 @@ Authorization: Bearer {{token}}
 
 ### 5. Perfil inexistente -> 400 (o model binding recusa o valor)
 # EX02 - Filtro por perfil - Valor que não existe no enum: a API responde 400 sozinha
-GET {{host}}/api/users?profile=Chefe
+GET {{host}}/api/users?profile=Master
 Authorization: Bearer {{token}}
 
 ### 6. Criar usuário operator  -> 201 Created
