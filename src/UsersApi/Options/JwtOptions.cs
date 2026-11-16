@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UsersApi.Options;
 
-// EX04 - Autenticação com JWT - Aqui são as opções do JWT, lidas da seção "JwtOptions" do appsettings (arquivo novo)
+// EX05 - Autenticação com JWT - Aqui são as opções do JWT, lidas da seção "JwtOptions" do appsettings (arquivo novo)
 public sealed class JwtOptions
 {
     public const string SectionName = "JwtOptions";

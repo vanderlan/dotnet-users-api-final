@@ -9,13 +9,13 @@ using UsersApi.Options;
 
 namespace UsersApi.Security;
 
-// EX04 - Autenticação com JWT - Aqui é a interface do gerador de token (arquivo novo)
+// EX05 - Autenticação com JWT - Aqui é a interface do gerador de token (arquivo novo)
 public interface ITokenService
 {
     LoginResponse CreateAccessToken(User user);
 }
 
-// EX04 - Autenticação com JWT - Aqui é a classe que gera o token JWT (no mesmo arquivo novo)
+// EX05 - Autenticação com JWT - Aqui é a classe que gera o token JWT (no mesmo arquivo novo)
 public sealed class JwtTokenService(IOptions<JwtOptions> options, TimeProvider clock) : ITokenService
 {
     private readonly JwtOptions _options = options.Value;
@@ -32,7 +32,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, TimeProvider c
             Expires = expires,
             SigningCredentials = new SigningCredentials(CreateKey(_options), SecurityAlgorithms.HmacSha512),
 
-            // EX04 - Autenticação com JWT - Aqui são as claims: o que o token afirma sobre o usuário (o Role alimenta o [Authorize])
+            // EX05 - Autenticação com JWT - Aqui são as claims: o que o token afirma sobre o usuário (o Role alimenta o [Authorize])
             Subject = new ClaimsIdentity(
             [
                 new Claim(ClaimTypes.Sid, user.PublicId),
@@ -46,7 +46,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, TimeProvider c
         return new LoginResponse(token, expires);
     }
 
-    // EX04 - Autenticação com JWT - Aqui são as regras de validação do token (usadas pelo Program.cs no AddJwtBearer)
+    // EX05 - Autenticação com JWT - Aqui são as regras de validação do token (usadas pelo Program.cs no AddJwtBearer)
     public static TokenValidationParameters CreateValidationParameters(JwtOptions options) => new()
     {
         ValidateIssuer = true,

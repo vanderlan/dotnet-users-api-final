@@ -15,6 +15,6 @@ public class NotFoundException(string id)
 public class ConflictException(string message)
     : BusinessException(message, "Conflito");
 
-// EX04 - Autenticação com JWT - Aqui é a exceção de login inválido (o DomainExceptionHandler a transforma em 401)
+// EX05 - Autenticação com JWT - Aqui é a exceção de login inválido (o DomainExceptionHandler a transforma em 401)
 public class UnauthorizedUserException(string message)
     : BusinessException(message, "Não autenticado");

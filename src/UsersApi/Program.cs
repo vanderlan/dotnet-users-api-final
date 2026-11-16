@@ -1,14 +1,14 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer; // EX04 - Autenticação com JWT - using do JwtBearer
+using Microsoft.AspNetCore.Authentication.JwtBearer; // EX05 - Autenticação com JWT - using do JwtBearer
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;                  // EX04 - Autenticação com JWT - using do IOptions (JwtOptions)
+using Microsoft.Extensions.Options;                  // EX05 - Autenticação com JWT - using do IOptions (JwtOptions)
 using Scalar.AspNetCore;
 using UsersApi.Data;
 using UsersApi.Data.Interceptors;
 using UsersApi.ExceptionHandling;
 using UsersApi.Filters;
-using UsersApi.Options;                              // EX04 - Autenticação com JWT - using da JwtOptions
+using UsersApi.Options;                              // EX05 - Autenticação com JWT - using da JwtOptions
 using UsersApi.Repositories;
 using UsersApi.Security;
 using UsersApi.Services;
@@ -22,7 +22,7 @@ builder.Services.AddControllers(options =>
     {
         options.Filters.Add<AutoValidationActionFilter>();
 
-        // EX02 - Adicionando filters - Aqui registro o filter (TimingFilter)
+        // EX03 - Adicionando filters - Aqui registro o filter (TimingFilter)
         options.Filters.Add<TimingFilter>();
     })
     // Enums trafegam como texto ("Admin") em vez de número.
@@ -46,22 +46,21 @@ builder.Services.AddDbContext<AppDbContext>((provider, options) =>
 });
 
 // Camadas da aplicação. Scoped = uma instância por requisição HTTP.
-// EX03 - Implementando o Unit of Work - Aqui registro o UnitOfWork (no lugar do IUserRepository, que ele mesmo cria)
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 
-// EX04 - Autenticação com JWT - Aqui registro o serviço de login e o gerador de token
+// EX05 - Autenticação com JWT - Aqui registro o serviço de login e o gerador de token
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
 
-// EX04 - Autenticação com JWT - Aqui registro as opções do JWT (validadas na inicialização)
+// EX05 - Autenticação com JWT - Aqui registro as opções do JWT (validadas na inicialização)
 builder.Services.AddOptions<JwtOptions>()
     .BindConfiguration(JwtOptions.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// EX04 - Autenticação com JWT - Aqui configuro a autenticação Bearer e a autorização
+// EX05 - Autenticação com JWT - Aqui configuro a autenticação Bearer e a autorização
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
@@ -86,7 +85,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();      // /scalar/v1
 }
 
-// EX04 - Autenticação com JWT - Aqui entram a autenticação e a autorização no pipeline (antes do MapControllers)
+// EX05 - Autenticação com JWT - Aqui entram a autenticação e a autorização no pipeline (antes do MapControllers)
 app.UseAuthentication();     // QUEM é você?  (lê e valida o JWT)
 app.UseAuthorization();      // O QUE você pode fazer?  ([Authorize])
 

@@ -7,10 +7,10 @@ namespace UsersApi.Repositories;
 
 public sealed class UserRepository(AppDbContext context) : IUserRepository
 {
-    // EX03 - Implementando o Unit of Work - Aqui o AddAsync só marca a entidade (sem SaveChanges). Quem grava é o UnitOfWork
     public async Task<User> AddAsync(User user, CancellationToken cancellationToken = default)
     {
-        await context.Users.AddAsync(user, cancellationToken);
+        context.Users.Add(user);
+        await context.SaveChangesAsync(cancellationToken);
 
         return user;
     }
@@ -28,7 +28,7 @@ public sealed class UserRepository(AppDbContext context) : IUserRepository
         if (!string.IsNullOrWhiteSpace(filter.Query))
             query = query.Where(x => EF.Functions.ILike(x.Name, $"%{filter.Query}%"));
 
-        // EX05 - Filtro por perfil - Aqui aplico o filtro na consulta (vira um WHERE no SQL)
+        // EX02 - Filtro por perfil - Aqui aplico o filtro na consulta (vira um WHERE no SQL)
         if (filter.Profile is not null)
             query = query.Where(x => x.Profile == filter.Profile.Value);
 
@@ -43,6 +43,13 @@ public sealed class UserRepository(AppDbContext context) : IUserRepository
         return new PagedResult<User>(items, count);
     }
 
-    // EX03 - Implementando o Unit of Work - Aqui o Remove só marca a entidade (sem SaveChanges)
-    public void Remove(User user) => context.Users.Remove(user);
+    // O usuário já vem "rastreado" pelo EF (GetByPublicIdAsync). Basta gravar.
+    public Task UpdateAsync(User user, CancellationToken cancellationToken = default) =>
+        context.SaveChangesAsync(cancellationToken);
+
+    public async Task DeleteAsync(User user, CancellationToken cancellationToken = default)
+    {
+        context.Users.Remove(user);
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

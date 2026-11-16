@@ -20,7 +20,7 @@ public sealed class DomainExceptionHandler(
         {
             NotFoundException => StatusCodes.Status404NotFound,
             ConflictException => StatusCodes.Status409Conflict,
-            // EX04 - Autenticação com JWT - Aqui mapeio o login inválido para 401
+            // EX05 - Autenticação com JWT - Aqui mapeio o login inválido para 401
             UnauthorizedUserException => StatusCodes.Status401Unauthorized,
             BusinessException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError

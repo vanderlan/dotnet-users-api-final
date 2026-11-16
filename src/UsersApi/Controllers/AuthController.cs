@@ -5,7 +5,7 @@ using UsersApi.Services;
 
 namespace UsersApi.Controllers;
 
-// EX04 - Autenticação com JWT - Aqui é o controller de login (arquivo novo). Fica aberto: o login não exige token
+// EX05 - Autenticação com JWT - Aqui é o controller de login (arquivo novo). Fica aberto: o login não exige token
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]

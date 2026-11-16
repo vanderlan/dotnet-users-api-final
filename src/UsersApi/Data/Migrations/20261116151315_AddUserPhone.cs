@@ -1,4 +1,4 @@
-// EX06 - Novo campo no usuário - Aqui é a segunda migration, gerada pelo comando: Up adiciona a coluna Phone e Down remove (a tabela e os dados continuam)
+// EX04 - Novo campo no usuário - Aqui é a segunda migration, gerada pelo comando: Up adiciona a coluna Phone e Down remove (a tabela e os dados continuam)
 // Comando: dotnet ef migrations add AddUserPhone --project src/UsersApi --output-dir Data/Migrations
 using Microsoft.EntityFrameworkCore.Migrations;
 

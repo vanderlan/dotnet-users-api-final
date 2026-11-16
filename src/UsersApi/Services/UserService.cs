@@ -6,19 +6,19 @@ using UsersApi.Security;
 
 namespace UsersApi.Services;
 
-// EX03 - Implementando o Unit of Work - Aqui o service recebe o IUnitOfWork (antes recebia o IUserRepository)
-public sealed class UserService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : IUserService
+// Injeção de dependência por construtor primário: o container entrega o repositório e o hasher.
+public sealed class UserService(IUserRepository repository, IPasswordHasher passwordHasher) : IUserService
 {
     public async Task<PagedResult<UserResponse>> GetPagedAsync(UserFilter filter, CancellationToken cancellationToken)
     {
-        var users = await unitOfWork.Users.ListPagedAsync(filter, cancellationToken);
+        var users = await repository.ListPagedAsync(filter, cancellationToken);
 
         return new PagedResult<UserResponse>(users.Items.Select(UserResponse.From).ToList(), users.Count);
     }
 
     public async Task<UserResponse> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.Users.GetByPublicIdAsync(id, cancellationToken)
+        var user = await repository.GetByPublicIdAsync(id, cancellationToken)
                    ?? throw new NotFoundException(id);
 
         return UserResponse.From(user);
@@ -30,25 +30,22 @@ public sealed class UserService(IUnitOfWork unitOfWork, IPasswordHasher password
 
         await EnsureEmailIsAvailableAsync(email, ignoreId: null, cancellationToken);
 
-        var user = await unitOfWork.Users.AddAsync(new User
+        var user = await repository.AddAsync(new User
         {
             Name = request.Name.Trim(),
             Email = email,
             Profile = request.Profile,
-            // EX06 - Novo campo no usuário - Aqui gravo o Phone ao criar (Trim tira espaços das pontas)
+            // EX04 - Novo campo no usuário - Aqui gravo o Phone ao criar (Trim tira espaços das pontas)
             Phone = request.Phone?.Trim(),
             PasswordHash = passwordHasher.Hash(request.Password)
         }, cancellationToken);
-
-        // EX03 - Implementando o Unit of Work - Aqui é o commit depois do AddAsync
-        await unitOfWork.CommitAsync(cancellationToken);
 
         return UserResponse.From(user);
     }
 
     public async Task UpdateAsync(string id, UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.Users.GetByPublicIdAsync(id, cancellationToken)
+        var user = await repository.GetByPublicIdAsync(id, cancellationToken)
                    ?? throw new NotFoundException(id);
 
         var email = NormalizeEmail(request.Email);
@@ -59,29 +56,25 @@ public sealed class UserService(IUnitOfWork unitOfWork, IPasswordHasher password
         user.Email = email;
         user.Profile = request.Profile;
 
-        // EX06 - Novo campo no usuário - Aqui atualizo o Phone
+        // EX04 - Novo campo no usuário - Aqui atualizo o Phone
         user.Phone = request.Phone?.Trim();
 
-        // EX03 - Implementando o Unit of Work - Aqui é o commit depois de alterar os campos (no lugar do UpdateAsync)
-        await unitOfWork.CommitAsync(cancellationToken);
+        await repository.UpdateAsync(user, cancellationToken);
     }
 
     public async Task DeleteAsync(string id, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.Users.GetByPublicIdAsync(id, cancellationToken)
+        var user = await repository.GetByPublicIdAsync(id, cancellationToken)
                    ?? throw new NotFoundException(id);
 
-        unitOfWork.Users.Remove(user);
-
-        // EX03 - Implementando o Unit of Work - Aqui é o commit depois do Remove
-        await unitOfWork.CommitAsync(cancellationToken);
+        await repository.DeleteAsync(user, cancellationToken);
     }
 
     private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 
     private async Task EnsureEmailIsAvailableAsync(string email, string? ignoreId, CancellationToken cancellationToken)
     {
-        var existing = await unitOfWork.Users.FindByEmailAsync(email, cancellationToken);
+        var existing = await repository.FindByEmailAsync(email, cancellationToken);
 
         if (existing is not null && existing.PublicId != ignoreId)
             throw new ConflictException("Já existe um usuário com este e-mail.");

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
-    <!-- EX04 - Autenticação com JWT - Aqui é o pacote do JwtBearer (dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer) -->
+    <!-- EX05 - Autenticação com JWT - Aqui é o pacote do JwtBearer (dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer) -->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">

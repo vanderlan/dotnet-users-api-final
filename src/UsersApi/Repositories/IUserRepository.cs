@@ -13,7 +13,6 @@ public interface IUserRepository
     Task<User?> GetByPublicIdAsync(string publicId, CancellationToken cancellationToken = default);
     Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<PagedResult<User>> ListPagedAsync(UserFilter filter, CancellationToken cancellationToken = default);
-
-    // EX03 - Implementando o Unit of Work - Aqui o UpdateAsync sumiu (a entidade já é rastreada) e o DeleteAsync virou Remove, sem gravar
-    void Remove(User user);
+    Task UpdateAsync(User user, CancellationToken cancellationToken = default);
+    Task DeleteAsync(User user, CancellationToken cancellationToken = default);
 }

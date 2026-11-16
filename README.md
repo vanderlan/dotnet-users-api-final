@@ -1,7 +1,7 @@
 ﻿# dotnet-users-api-final
 
 Projeto **completo** da oficina **C# e .NET na prática** (Tech Week · Facisa): API de usuários em **.NET 10 + PostgreSQL**
-com todos os exercícios (`EX01` a `EX07`) implementados. O ponto de partida dos alunos é o
+com todos os exercícios (`EX01` a `EX06`) implementados. O ponto de partida dos alunos é o
 **[dotnet-users-api-initial](https://github.com/vanderlan/dotnet-users-api-initial)**, que traz o passo a passo de cada exercício.
 
 ## Como achar o código de cada exercício
@@ -9,8 +9,8 @@ com todos os exercícios (`EX01` a `EX07`) implementados. O ponto de partida dos
 Todo trecho de código pertencente a um exercício tem um comentário no formato:
 
 ```csharp
-// EX02 - Adicionando filters - Aqui é a classe do filter
-// EX02 - Adicionando filters - Aqui registro o filter
+// EX03 - Adicionando filters - Aqui é a classe do filter
+// EX03 - Adicionando filters - Aqui registro o filter
 ```
 
 Pesquise pelo código do exercício no VS Code (Ctrl+Shift+F): `EX01` para um exercício, `EX0` para todos os pontos de todos os exercícios.
@@ -18,12 +18,11 @@ Pesquise pelo código do exercício no VS Code (Ctrl+Shift+F): `EX01` para um ex
 | Exercício | Tema | Onde está |
 |-----------|------|-----------|
 | **EX01** | Criando as migrations | `src/UsersApi/Data/Migrations/*_InitialCreate*` e `AppDbContextModelSnapshot.cs` · `Program.cs` (comentário no `AddDbContext`) |
-| **EX02** | Adicionando filters | `Filters/TimingFilter.cs` · `Program.cs` (registro do filter) |
-| **EX03** | Implementando o Unit of Work | `Repositories/IUnitOfWork.cs`, `UnitOfWork.cs`, `IUserRepository.cs`, `UserRepository.cs` · `Services/UserService.cs` · `Program.cs` |
-| **EX04** | Autenticação com JWT | `Options/JwtOptions.cs` · `Security/JwtTokenService.cs` · `Dtos/AuthDtos.cs` · `Services/AuthService.cs` · `Controllers/AuthController.cs` e `UsersController.cs` · `Domain/Exceptions/BusinessException.cs` · `ExceptionHandling/DomainExceptionHandler.cs` · `Validators/Validators.cs` · `Program.cs` · `appsettings.Development.json` · `UsersApi.csproj` · `UsersApi.http` |
-| **EX05** | Filtro por perfil na listagem | `Dtos/UserDtos.cs` (`UserFilter`) · `Repositories/UserRepository.cs` · `Controllers/UsersController.cs` (comentários) · `UsersApi.http` |
-| **EX06** | Novo campo no usuário (segunda migration) | `Domain/Entities/User.cs` · `Data/Mappings/UserMapping.cs` · `Dtos/UserDtos.cs` · `Services/UserService.cs` · `Validators/Validators.cs` · `Data/Migrations/*_AddUserPhone*` e `AppDbContextModelSnapshot.cs` · `UsersApi.http` |
-| **EX07** | Endpoint `GET /api/users/me` | `Controllers/UsersController.cs` · `UsersApi.http` |
+| **EX02** | Filtro por perfil na listagem | `Dtos/UserDtos.cs` (`UserFilter`) · `Repositories/UserRepository.cs` · `Controllers/UsersController.cs` (comentários) · `UsersApi.http` |
+| **EX03** | Adicionando filters | `Filters/TimingFilter.cs` · `Program.cs` (registro do filter) |
+| **EX04** | Novo campo no usuário (segunda migration) | `Domain/Entities/User.cs` · `Data/Mappings/UserMapping.cs` · `Dtos/UserDtos.cs` · `Services/UserService.cs` · `Validators/Validators.cs` · `Data/Migrations/*_AddUserPhone*` e `AppDbContextModelSnapshot.cs` · `UsersApi.http` |
+| **EX05** | Autenticação com JWT | `Options/JwtOptions.cs` · `Security/JwtTokenService.cs` · `Dtos/AuthDtos.cs` · `Services/AuthService.cs` · `Controllers/AuthController.cs` e `UsersController.cs` · `Domain/Exceptions/BusinessException.cs` · `ExceptionHandling/DomainExceptionHandler.cs` · `Validators/Validators.cs` · `Program.cs` · `appsettings.Development.json` · `UsersApi.csproj` · `UsersApi.http` |
+| **EX06** | Endpoint `GET /api/users/me` | `Controllers/UsersController.cs` · `UsersApi.http` |
 
 ## Como rodar
 
@@ -31,7 +30,7 @@ Pesquise pelo código do exercício no VS Code (Ctrl+Shift+F): `EX01` para um ex
 dotnet tool install --global dotnet-ef --version 10.*   # (ou: dotnet tool update --global dotnet-ef --version 10.*)
 
 docker compose up -d                                    # PostgreSQL (5432) + pgAdmin (5050)
-dotnet ef database update --project src/UsersApi        # aplica as 2 migrations (EX01 e EX06)
+dotnet ef database update --project src/UsersApi        # aplica as 2 migrations (EX01 e EX04)
 dotnet run --project src/UsersApi --launch-profile Dev
 ```
 
@@ -50,11 +49,11 @@ dotnet run --project src/UsersApi --launch-profile Dev
 | `PUT`    | `/api/users/{id}`   | Admin            | `204`          | 400, 401, 403, 404, 409 |
 | `DELETE` | `/api/users/{id}`   | Admin            | `204`          | 401, 403, 404   |
 
-Filtros da listagem (`GET /api/users`): `?page=1&quantity=10&query=ana&profile=Admin` (EX05). Um `profile` que não existe responde `400`.
+Filtros da listagem (`GET /api/users`): `?page=1&quantity=10&query=ana&profile=Admin` (EX02). Um `profile` que não existe responde `400`.
 
 > O cadastro (`POST /api/users`) é aberto para dar para criar o primeiro usuário. Em um sistema real, o primeiro
 > administrador viria de um *seed* e o perfil não seria escolhido pelo cliente.
 
 ## Fluxo de uma requisição
 
-`Controller → Service → UnitOfWork → Repository → AppDbContext → PostgreSQL`
+`Controller → Service → Repository → AppDbContext → PostgreSQL`

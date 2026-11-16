@@ -5,21 +5,21 @@ using UsersApi.Security;
 
 namespace UsersApi.Services;
 
-// EX04 - Autenticação com JWT - Aqui é a interface do serviço de login (arquivo novo)
+// EX05 - Autenticação com JWT - Aqui é a interface do serviço de login (arquivo novo)
 public interface IAuthService
 {
     Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
 }
 
-// EX04 - Autenticação com JWT - Aqui é o serviço de login: confere o e-mail e a senha e gera o token
+// EX05 - Autenticação com JWT - Aqui é o serviço de login: confere o e-mail e a senha e gera o token
 public sealed class AuthService(
-    IUnitOfWork unitOfWork,
+    IUserRepository repository,
     IPasswordHasher passwordHasher,
     ITokenService tokenService) : IAuthService
 {
     public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.Users.FindByEmailAsync(request.Email.Trim().ToLowerInvariant(), cancellationToken);
+        var user = await repository.FindByEmailAsync(request.Email.Trim().ToLowerInvariant(), cancellationToken);
 
         // Mesma mensagem para "e-mail não existe" e "senha errada": não revela quais e-mails existem.
         if (user is null || !passwordHasher.Verify(user.PasswordHash, request.Password))
