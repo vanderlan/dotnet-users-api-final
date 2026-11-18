@@ -20,7 +20,7 @@ public class UserMapping : IEntityTypeConfiguration<User>
         // EX04 - Novo campo no usuário - Aqui é a coluna: tamanho máximo 20 e opcional (sem IsRequired)
         builder.Property(x => x.Phone).HasMaxLength(20);
 
-        // Enum gravado como texto ("Admin") para ficar legível no pgAdmin.
+        // Enum gravado como texto ("Admin") para ficar legível ao abrir o banco.
         builder.Property(x => x.Profile).HasConversion<string>().HasMaxLength(20).IsRequired();
 
         builder.HasIndex(x => x.PublicId).IsUnique();

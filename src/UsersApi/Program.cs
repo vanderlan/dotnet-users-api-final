@@ -34,13 +34,13 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<DomainExceptionHandler>();
 
-// Entity Framework Core + PostgreSQL
+// Entity Framework Core + SQLite
 // EX01 - Criando as migrations - O esquema do banco vem das migrations (pasta Data/Migrations), não deste código
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<TimestampsInterceptor>();
 builder.Services.AddDbContext<AppDbContext>((provider, options) =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
     options.AddInterceptors(
         provider.GetRequiredService<TimestampsInterceptor>());
 });

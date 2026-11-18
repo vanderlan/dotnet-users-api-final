@@ -26,7 +26,7 @@ public sealed class UserRepository(AppDbContext context) : IUserRepository
         IQueryable<User> query = context.Users.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(filter.Query))
-            query = query.Where(x => EF.Functions.ILike(x.Name, $"%{filter.Query}%"));
+            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Query}%"));
 
         // EX02 - Filtro por perfil - Aqui aplico o filtro na consulta (vira um WHERE no SQL)
         if (filter.Profile is not null)

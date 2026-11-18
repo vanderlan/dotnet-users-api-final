@@ -1,6 +1,6 @@
 ﻿# dotnet-users-api-final
 
-Projeto **completo** da oficina **C# e .NET na prática** (Tech Week · Facisa): API de usuários em **.NET 10 + PostgreSQL**
+Projeto **completo** da oficina **C# e .NET na prática** (Tech Week · Facisa): API de usuários em **.NET 10 + SQLite**
 com todos os exercícios (`EX01` a `EX06`) implementados. O ponto de partida dos alunos é o
 **[dotnet-users-api-initial](https://github.com/vanderlan/dotnet-users-api-initial)**, que traz o passo a passo de cada exercício.
 
@@ -29,12 +29,12 @@ Pesquise pelo código do exercício no VS Code (Ctrl+Shift+F): `EX01` para um ex
 ```bash
 dotnet tool install --global dotnet-ef --version 10.*   # (ou: dotnet tool update --global dotnet-ef --version 10.*)
 
-docker compose up -d                                    # PostgreSQL (5432) + pgAdmin (5050)
-dotnet ef database update --project src/UsersApi        # aplica as 2 migrations (EX01 e EX04)
+dotnet ef database update --project src/UsersApi        # cria o arquivo usersdb.db e aplica as 2 migrations (EX01 e EX04)
 dotnet run --project src/UsersApi --launch-profile Dev
 ```
 
-- API: http://localhost:5042 · Scalar: http://localhost:5042/scalar/v1 · pgAdmin: http://localhost:5050
+- API: http://localhost:5042 · Scalar: http://localhost:5042/scalar/v1
+- Banco: arquivo SQLite `src/UsersApi/usersdb.db` (abra com o DB Browser for SQLite ou uma extensão de SQLite do VS Code)
 - Requisições prontas (cadastro, login com token, filtro, `/me`, 401/403): [`src/UsersApi/UsersApi.http`](src/UsersApi/UsersApi.http)
 
 ## Endpoints
@@ -56,4 +56,4 @@ Filtros da listagem (`GET /api/users`): `?page=1&quantity=10&query=ana&profile=A
 
 ## Fluxo de uma requisição
 
-`Controller → Service → Repository → AppDbContext → PostgreSQL`
+`Controller → Service → Repository → AppDbContext → SQLite`
